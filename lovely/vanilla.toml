@@ -1,0 +1,49 @@
+[manifest]
+version = "1.0.0"
+priority = 0
+
+[[patches]]
+[patches.pattern]
+target = "blind.lua"
+pattern = "ease_dollars(-1)"
+position = "at"
+payload = '''
+ease_dollars(G.play.cards[i].base.nominal + 1 * -1 )
+'''
+match_indent = false
+
+[[patches]]
+[patches.pattern]
+target = "functions/common_events.lua"
+pattern = '''function ease_hands_played(mod, instant)
+    local _mod = function(mod)
+        local hand_UI = G.HUD:get_UIE_by_ID('hand_UI_count')
+        mod = mod or 0'''
+position = 'at'
+payload = '''
+function ease_hands_played(mod, instant)
+    local _mod = function(mod)
+        local hand_UI = G.HUD:get_UIE_by_ID('hand_UI_count')
+for i = 1, #G.jokers.cards do
+                local eval = nil
+                eval = SMODS and SMODS.calculate_context({post_play_anyeurism = true, hands_due = mod}) or G.jokers.cards[i]:calculate_joker({post_play_anyeurism = true, hands_due = mod})
+                if eval then
+                    if not eval.nuhuh then
+                        mod = mod or 0
+                        else
+                        mod = 0
+                    end
+                end
+            end
+'''
+match_indent = true
+
+[[patches]]
+[patches.pattern]
+target = 'game.lua'
+pattern = "    if new_game_obj then self.GAME = self:init_game_object() end"
+position = 'after'
+payload = '''self.GAME.WDYLG = {}
+self.GAME.WDYLG.hiddenhands = {}
+ for i, v in pairs(self.GAME.hands) do if v.visible == false and not WDYLG.find(self.GAME.WDYLG.hiddenhands, i) == false then table.insert(self.GAME.WDYLG.hiddenhands, i) end end'''
+match_indent = true

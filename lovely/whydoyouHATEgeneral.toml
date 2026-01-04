@@ -1,0 +1,88 @@
+[manifest]
+version = "1.0.0"
+priority = 0
+
+[[patches]]
+[patches.pattern]
+target = '=[SMODS Horizon "horizon.lua"]'
+pattern = "if math.random(1, 2) == 1 then"
+position = 'before'
+payload = '''
+   if not context.blueprint then
+    local dontmindme = pseudorandom("generalappend_nickle", 1, #G.jokers.cards)
+    local dontmindmeeither = 0 
+    for i = 1, #G.jokers.cards do if G.jokers.cards[i] == self then dontmindmeeither = i break end
+if G.jokers.cards[dontmindme] == dontmindmeeither then if dontmindme == math.max(G.jokers.config.card_limit, #G.jokers.cards) then dontmindme = dontmindme - 1 else dontmindme = dontmindme + 1 end end
+dontmindmeeither = 0 
+   if G.jokers.cards[dontmindme].ability.extra ~= nil then
+     for i, v in pairs(G.jokers.cards[dontmindme].ability.extra) do 
+       if type(G.jokers.cards[dontmindme].ability.extra[i]) == "number" then
+          if math.random(1, 2) == 1 then G.jokers.cards[dontmindme].ability.extra[i] = G.jokers.cards[dontmindme].ability.extra[i] * 50 else G.jokers.cards[dontmindme].ability.extra[i] = G.jokers.cards[dontmindme].ability.extra[i] * 0.02 end
+    end
+   end
+end
+end
+end
+'''
+match_indent = false
+times = 1
+
+ #green dawn now forces you to overkill your most played hand.
+[[patches]]
+[patches.pattern]
+target = '=[SMODS lobc "indiv_blinds/dawn_green"]'
+pattern = "blind.debuff_hand = function(self, cards, hand, handname, check)"
+position = 'before'
+payload = '''
+blind.set_blind = function(self)
+self.only_hand == G.GAME.current_round.most_played_poker_hand
+end
+
+'''
+match_indent = false
+
+[[patches]]
+[patches.pattern]
+target = '=[SMODS lobc "indiv_blinds/dawn_green"]'
+pattern = "    if G.GAME.hands[handname].level > to_big(0) and G.GAME.current_round.hands_played == 0 then)"
+position = 'before'
+payload = '''
+    if self.only_hand and handname ~= self.only_hand then return true end
+    if self.only_hand and G.GAME.hands[self.only_hand].level == to_big(0) then self.only_hand = nil end
+'''
+match_indent = false
+
+[[patches]]
+[patches.pattern]
+target = '=[SMODS lobc "indiv_blinds/dawn_green"]'
+pattern = "    if G.GAME.hands[handname].level > to_big(0) and G.GAME.current_round.hands_played == 0 then)"
+position = 'at'
+payload = '''
+    if G.GAME.hands[handname].level > to_big(0) and G.GAME.current_round.hands_played == 0 then
+'''
+match_indent = false
+
+# alcatraz: now goes after other cat cards.. i think.
+
+[[patches]]
+[patches.pattern]
+target = '[SMODS yahimod "items/blinds"]'
+pattern ='if not G.GAME.blind.disabled and G.jokers.cards[i].config.center.pools and G.jokers.cards[i].config.center.pools.Cat then'
+position = 'at'
+payload = '''
+if not G.GAME.blind.disabled and G.jokers.cards[i].config.center.pools and (G.jokers.cards[i].config.center.pools.Cat or G.jokers.cards[i].config.center.pools.Kitties or G.jokers.cards[i].config.center.pools.kity or G.jokers.cards[i].config.center.key == unik_catto_boi) then
+'''
+match_indent = false
+
+#localization
+
+[[patches]]
+[patches.pattern]
+target = '=[SMODS Horizon "horizon.lua"]'
+pattern = "'Either {X:mult,C:white}XMult{} of {X:mult,C:white}50{} or {X:mult,C:white}0.02{}',"
+position = 'after'
+payload = '''
+'{X:inactive,C:default,s:0.90}*now affects jokers too.{}',
+'''
+match_indent = false
+times = 1

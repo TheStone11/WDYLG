@@ -1,0 +1,12 @@
+{
+"id": "general",
+"name": "Why do you Like #General?",
+"author": ["StonedGolemLover"],
+"description": "A Abundance of Material.",
+"prefix":"wdylg",
+"dependencies": [
+ "Steamodded"
+],
+"main_file": "main.lua",
+"version": "1.0.2"
+}
