@@ -1,5 +1,4 @@
-
-
+CardSleeves = CardSleeves or {}
 
 
 SMODS.Joker{
@@ -17,10 +16,12 @@ SMODS.Joker{
 	cost = 9,
 	atlas = 'wdylx',
 	pos = {x = 0, y = 0},
-	
+
+
 	unlocked = true,
 	discovered = false,
 	loc_vars = function(self, info_queue, card)
+     if G.P_CENTERS["j_kino_scarface_2"] ~= nil then self.kino_joker = G.P_CENTERS["j_kino_scarface_2"].kino_joker end
 	return { vars = {self.config.extra.bullet_count or 4} }
 	end,
     in_pool = function(self, args)
@@ -127,8 +128,32 @@ end
 end
 }
 
+local idunnohowtosleeve = {
+	key = "1MB",
+	name = "Downsized Sleeve",
+	--i dunno if theres a placeholder for missing image, so snatching the abandoned sleeve just in case.
+    atlas = "casl_sleeve_atlas",
+    pos = { x = 3, y = 1 },
+	apply = function (self, sleeve)
+     SMODS.create_card{key = "j_ring_master", edition = "e_negative", stickers = {"eternal"}}
+	end,
+
+	calculate = function (sleeve, context)
+     if context.modify_shop_card then
+		if context.card.ability.set == "Joker" and context.card.rarity ~= 1 then 
+			if context.card.key == "j_wee" then return end
+			context.card:set_ability(pseudorandom_element(G.P_JOKER_RARITY_POOLS[1], "wdylg_insertcheapshothere"))
+	 end
+	end
+end
+}
+
 --Spare trousers: give a instance a special appearance if it has zirconium on it.
 
 --Zirconium Pants: Same as above.
 
 --elliot (sorry.. i can only do this with kino)
+
+if next(SMODS.find_mod("casl")) then
+	CardSleeves.Sleeve:register(idunnohowtosleeve)
+end

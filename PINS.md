@@ -12,7 +12,7 @@ Highlighting the joker and pressing G while in a booster pack triggers *Ceaseles
 
 Doing the same before the hand enables ceaseless void to unleash it's stored power, boosting your chips.
 
-==**HOWEVER** if you EVER sell this joker or get it destroyed by any other means, half of your deck will be Taken along as collateral damage.==
+**HOWEVER** if you EVER sell this joker or get it destroyed by any other means, half of your deck will be Taken along as collateral damage.
 
 ## THE LEGENDARY ARTIFACT.
 
