@@ -292,11 +292,6 @@ SMODS.Joker{
 }
 SMODS.Joker{
 	key = 'artifact',
-
-	loc_txt = {
-		name = "Legendary Artifact.",
-		text = {"You are GOING to like this."}
-	},
 		atlas = 'wdylhlf',
 	pos = {x = 6, y = 0},
 	pixel_size = {w = 71, h = 65},
@@ -304,8 +299,12 @@ SMODS.Joker{
 	unlocked = false,
 	discovered = false,
     blueprint_compat = false,
-	no_collection = G.P_CENTERS["j_wdylg_artіfact"].unlocked,
+	no_collection = false,
     rarity = 4,
+	loc_vars = function(self, info_queue_center)
+		self.no_collection = G.P_CENTERS["j_wdylg_artіfact"].unlocked
+		return { key = G.P_CENTERS["j_wdylg_artіfact"].unlocked and "j_wdylg_artifact_revealed" or nil}
+	end,
      in_pool = function(self, args)
     return not args or G.P_CENTERS["j_wdylg_artіfact"].unlocked
 end,
