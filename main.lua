@@ -44,6 +44,15 @@ SMODS.Sound{
 }
 --end of arrays
 
+--file loading
+
+local j = {"code/contentjokers", "code/styling", "code/ifstatementpurgatorio", "code/contentblinds", "code/contentfunc", "code/contentAAAA"}
+
+for i,v in pairs(j) do
+assert(SMODS.load_file(v..".lua"))()
+end
+
+
 SMODS.current_mod.optional_features = {
 
     post_trigger = true,
@@ -54,13 +63,14 @@ cardareas = {
     }
 }
 
---file loading
-
-local j = {"code/contentjokers", "code/styling", "code/ifstatementpurgatorio", "code/contentblinds", "code/contentfunc", "code/contentAAAA"}
-
-for i,v in pairs(j) do
-assert(SMODS.load_file(v..".lua"))()
+SMODS.current_mod.reset_game_globals = function (run_start)
+if run_start then G.GAME.WDYLG = {} 
+G.GAME.WDYLG.hiddenhands = {}
+ for i, v in pairs(G.GAME.hands) do if v.visible == false and not WDYLG.find(G.GAME.WDYLG.hiddenhands, i) == false then table.insert(G.GAME.WDYLG.hiddenhands, i) end end
+G.GAME.WDYLG.chaosemeraldgone = false
 end
+end
+
 
 --[[
 assert(SMODS.load_file("code/contentjokers.lua"))()
