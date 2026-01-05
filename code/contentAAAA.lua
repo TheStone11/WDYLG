@@ -1,38 +1,4 @@
-SMODS.Consumable{
-    key = 'sewing',
-    set = 'Spectral',
-    loc_txt = {
-        name = "Sewing Needles",
-        text = {"{C:inactive}AAA DON'T TURN ME INTO A MARKETABLE PLUSHIE!{}",
-                "Using this will instakill the blind at less than 20%",
-                 "of chips remaining. Netting you a cute plushie."}
-    },
-    config = {},
-    		atlas = 'wdylj',
-	pos = {x = 6, y = 0},
-    cost = 10,
-    select_card = 'consumables',
 
-    can_use = function (self, card)
-        return not G.game.blind == nil
-    end,
-
-    use = function (self, card, area, copier)
-       if G.GAME.chips/G.GAME.blind.chips > 0.80 then
-        G.GAME.blind.chips = 0
-        G.GAME.blind.dollars = 0
-        G.GAME.blind.chip_text = "Poofed." --number_format(G.GAME.blind.chips)
-        G.GAME.chips = G.GAME.chips + 180
-        local jimmy =    SMODS.add_card{key = "j_wdylg_plushie"}
-        jimmy.extra.ID = G.GAME.blind.key
-        jimmy.extra.origin = "BLIND"
-        return {message = "Success.", card = jimmy}
-       else
-        SMODS.juice_up_blind()
-        return {message = "Missed.", card = card}
-       end
-    end
-}
 
 --paperback thanky ou
 SMODS.Consumable{
