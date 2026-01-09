@@ -19,6 +19,25 @@ Doing the same before the hand enables ceaseless void to unleash it's stored pow
 BEHOLD, THE ULTIMATE GLASS CANNON... 
 although on average, only one in every four artifacts are real.. the rest instantly summon mad sackboy.
 
+## MAD SACKBOY.
+
+Trying to score this joker causes a coinflip between giving fake exponential mult that compounds on itself, or instantly deleting love.
+
+## bigrat.monster
+
+This big rat turns stone to XCHIPS and RETRIGGERS and gives it to the final joker in your slots, or sends it directly to the last playing card...
+whichever comes first.
+
+Counts as part of the Danger archetype if joyous spring is enabled.
+
+# Consumables
+
+## NighMortem Neutron Star.
+
+Aka. "Dying Neutron Star"
+
+Trades all your enhanced cards, jokers, and levels for levels on a hand determined the moment the card generates.
+
 # BLINDS
 
 ## Supreme Defenestration.

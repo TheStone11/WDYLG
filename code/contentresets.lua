@@ -1,0 +1,33 @@
+WDYLG.static.embeddable = {
+    "j_four_fingers",
+    "j_credit_card",
+    "j_chaos",
+    "j_space",
+    "j_superposition",
+    "j_seance",
+    "j_shortcut",
+    'j_to_the_moon',
+    'j_hallucination',
+    'j_juggler',
+    'j_drunkard',
+    'j_satellite',
+    'j_burnt',
+    'j_chicot',
+    'j_wdylg_oldman',
+    'j_wdylg_NOTTHEONEFROMFORSAKEN'
+}
+
+WDYLG.static.pregametitles = {
+    "Why Do YOU Like General?",
+    "Big Rat Monster strikes again.",
+    "The owner of WDYLG thanks Lapsem for letting him use their background recoloring function.",
+    "Also try ########",
+    "DELTARUNE TOMORROW!!!",
+    "The Raccoon broke my garbage again.",
+    "TV TROPES DOES NOT LIKE THIS.",
+    "+4 Mult",
+    ".--- --- -.- . .-.",
+    "0110101001101111011010110110010101110010",
+    "10 15 11 05 19",
+    "I ran out of ideas."
+}

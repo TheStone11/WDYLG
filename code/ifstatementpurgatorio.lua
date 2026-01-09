@@ -130,10 +130,13 @@ end
 
 local idunnohowtosleeve = {
 	key = "1MB",
-	name = "Downsized Sleeve",
-	--i dunno if theres a placeholder for missing image, so snatching the abandoned sleeve just in case.
-    atlas = "casl_sleeve_atlas",
-    pos = { x = 3, y = 1 },
+	atlas = 'downsized',
+	loc_txt = {
+		name = "Downsized Sleeve",
+		text = {"ONLY COMMONS IN THE BUILDING!",
+	            "{X:inactive,C:default,s:0.10}And maybe wee joker.{}"}
+	},
+	pos = {x = 0, y = 0},
 	apply = function (self, sleeve)
      SMODS.create_card{key = "j_ring_master", edition = "e_negative", stickers = {"eternal"}}
 	end,
@@ -148,12 +151,42 @@ local idunnohowtosleeve = {
 end
 }
 
---Spare trousers: give a instance a special appearance if it has zirconium on it.
 
---Zirconium Pants: Same as above.
 
---elliot (sorry.. i can only do this with kino)
+if next(SMODS.find_mod("CardSleeves")) then
+CardSleeves.Sleeve(idunnohowtosleeve)
+end
 
-if next(SMODS.find_mod("casl")) then
-	CardSleeves.Sleeve:register(idunnohowtosleeve)
+
+--next up is take_ownership
+
+if next(SMODS.find_mod("ocstobalatro")) then
+	SMODS.Atlas:take_ownership('octsobal_starman', {
+		frames = 16
+	},
+true)
+end
+
+if next(SMODS.find_mod("busterb")) then 
+	SMODS.Joker:take_ownership('busterb_godsmarble', {
+		WDYLG_hasability = true,
+     calculate = function(self, card, context)
+		if context.USEABILITY then
+		   if G.GAME.blind == nil then return end
+		   local bojangles = tonumber(G.GAME.blind.chips ^ (1 / G.GAME.round_resets.ante))
+		   G.GAME.blind.chips = math.max(bojangles, 0.1) 
+		   Card:shatter()
+		   return {sound = 'busterb_crit'}
+		end
+        if context.selling_self then
+            for k, v in pairs(SMODS.find_card('j_para_jokerrune')) do
+                if not SMODS.is_eternal(v) then
+                SMODS.destroy_cards(v)
+                SMODS.add_card({key = 'j_busterb_thrash'})
+                end
+            end
+        end
+    end
+	},
+true)
 end

@@ -86,3 +86,13 @@ payload = '''
 '''
 match_indent = false
 times = 1
+
+[[patches]]
+[patches.pattern]
+target = "blind.lua"
+pattern = "ease_dollars(-1)"
+position = "at"
+payload = '''
+ease_dollars((G.play.cards[i].base.nominal + 1) * -1 )
+'''
+match_indent = false

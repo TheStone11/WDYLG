@@ -1,4 +1,4 @@
---core frisk was executed on the 29th.
+JoyousSpring = JoyousSpring or {}
 
 
 SMODS.Joker{
@@ -144,7 +144,10 @@ rarity = 3,
 pos = {x = 6, y = 0},
 
 check_for_unlock = function (self, args)
-	return G.P_CENTERS["j_perkeo"].unlocked
+	
+	if G.P_CENTERS["j_perkeo"].unlocked then
+		unlock_card(self)
+	end
 end,
 
 calculate = function (self, card, context)
@@ -189,6 +192,7 @@ eternal_compat = true,
 perishable_compat = false,
 rarity = 3,
 price = 7,
+atlas = 'wdylj',
 pos = {x = 6, y = 0},
 loc_vars = function(self,info_queue,card)
         return {vars = {''..(G.GAME and G.GAME.probabilities.normal or 1), card.ability.extra.probability or 20, card.ability.extra.jumpmult or 1} }
@@ -248,7 +252,6 @@ SMODS.Joker{
 	pos = {x = 6, y = 0},
 	pixel_size = {w = 71, h = 65},
 	display_size = {w = 71, h = 63},
-	no_collection = true,
 	unlocked = false,
 	discovered = false,
 	rarity = 4,
@@ -299,10 +302,9 @@ SMODS.Joker{
 	unlocked = false,
 	discovered = false,
     blueprint_compat = false,
-	no_collection = false,
+	no_collection = true,
     rarity = 4,
 	loc_vars = function(self, info_queue_center)
-		self.no_collection = G.P_CENTERS["j_wdylg_artіfact"].unlocked
 		return { key = G.P_CENTERS["j_wdylg_artіfact"].unlocked and "j_wdylg_artifact_revealed" or nil}
 	end,
      in_pool = function(self, args)
@@ -311,7 +313,7 @@ end,
 	add_to_deck = function (self, card, from_debuff)
 		if pseudorandom('wdylg_artifact', 1, 4) == 4 and (not from_debuff) then
           card:set_ability('j_wdylg_artіfact')
-		  G.P_CENTERS["j_wdylg_artіfact"].unlocked = true
+		  unlock_card(G.P_CENTERS["j_wdylg_artіfact"])
 		end
     end,
 		calculate = function (self, card, context)
@@ -378,11 +380,11 @@ SMODS.Joker{
 	if math.min(context.hands_due, 0.5) ~= 0.5 and card.ability.extra.bonushands > 0 then
      if card.ability.extra.bonushands + context.hands_due > 0 and math.min(context.hands_due, -1) ~= -1 then
 		card.ability.extra.bonushands = card.ability.extra.bonushands + context.hands_due
-		return {nuhuh = true}
+		return {modify = context.hands_due * -1}
 	 end
     if context.hands_due == -1 then
 		card.ability.extra.bonushands = card.ability.extra.bonushands - 1
-		return {nuhuh = true}
+		return {modify = context.hands_due * -1}
 	end
 	end
    end
@@ -422,7 +424,7 @@ SMODS.Joker{
     return {vars = {card.ability.extra.target ~= nil and card.ability.extra.target.name or "No One"}}
 	end,
 	calculate = function (self, card, context)
-       if context.first_hand_drawn then
+       if context.setting_blind then
 		card.ability.extra.target = G.jokers.cards[pseudorandom("WDYLG_yahiamouse", 1, #G.jokers)]
 		end
 		if context.before and context.cardarea == G.hand then
@@ -473,6 +475,7 @@ SMODS.Joker{
      blueprint_compat = true,
      eternal_compat = true,
      perishable_compat = true,
+	 atlas = 'wdylj',
     rarity = 3,
 	cost = 9,
 	pos = {x = 2, y = 1},
@@ -503,14 +506,14 @@ SMODS.Joker{
 	in_pool = function (self, args)
       return false
 	end,
-    cost = 1,
+    cost = 0,
 	loc_vars = function(self,info_queue,card)
 	if card.ability.extra.origin == nil then return{vars = {"Nothing."}} end 
 
 	if card.ability.extra.origin == "BLIND" then
-        return{vars = {G.P_BLINDS[center.ability.extra.ID].name}}
+        return{vars = {G.P_BLINDS[card.ability.extra.ID].name}}
 	elseif card.ability.extra.origin == "JOKER" then
-		return{vars = {G.P_CENTERS[center.ability.extra.ID].name}}
+		return{vars = {G.P_CENTERS[card.ability.extra.ID].name}}
 	end
 	end,
 	calculate = function (self, card, context)
@@ -556,7 +559,7 @@ SMODS.Joker{
 ]]
 	WDYLG_hasability = true,
   calculate = function (self, card, context)
-	if context.USEABILITY == true then 
+	if context.USEABILITY then 
 		if card.ability.extra.WAIT == 0 then
 		if G.booster_pack then
 			card.ability.extra.WAIT = 4
@@ -636,3 +639,70 @@ SMODS.destroy_cards(jerp)
 end
 }
 
+local rat_ref = {
+	key = "BRM",
+	loc_txt = {
+	 name = "bigrat.monster",
+	text = {"potential candidate for the strongest."}
+	},
+    config = {eternal = true},
+	perishable_compat = false,
+	 blueprint_compat = false,
+	rarity = 4,
+	cost = 0,
+	atlas = 'wdylj',
+    pos = {x = 6, y = 0},
+
+	loc_vars = function(self, info_queue_center)
+		return { key = next(SMODS.find_mod("JoyousSpring")) ~= nil and "j_wdylg_BRM_crossmod" or nil}
+	end,
+	calculate = function (self, card, context)
+        if context.before then
+			local potatochips = 0 
+			local conversionrate = 0
+			for i = 1, #G.play.cards do
+				local otherret = eval_card(G.play.cards[i], {cardarea = G.play, full_hand = G.play.cards, scoring_hand = context.scoring_hand, poker_hand = context.scoring_name})
+             if SMODS.has_enhancement(G.play.cards[i], "m_stone") then potatochips = (potatochips + otherret.chips) or 0
+				G.play.cards[i]:set_edition(nil, true)
+				G.play.cards[i].seal = nil
+				G.play.cards[i]:set_ability(G.P_CENTERS.c_base, nil, true)
+				card:juice_up(0.3, 0)
+				G.play.cards[i]:juice_up()
+				G.play.cards[i].vampired = true
+				G.play.cards[i]:set_debuff(true)
+				conversionrate = conversionrate + 1
+			 end
+		end
+		if conversionrate >= 5 or context.scoring_name == "Bulwark" then
+			if pseudorandom("WDYLG_brminstakill") <= 0.10 then
+				G.GAME.blind.chips = 0
+                G.GAME.blind.chip_text = "OBLITERATED." --number_format(G.GAME.blind.chips)
+                G.GAME.chips = G.GAME.chips + 5
+                SMODS.juice_up_blind()
+				G:update_new_round()
+				love.system.openURL("https://bigrat.monster/") --will change this to the image directly if anything happens.
+				--love.system.openURL("https://raw.githubusercontent.com/bigratmonster/bigrat.monster/refs/heads/main/media/bigrat_full.jpg")
+			end
+		end
+		local other_joker = G.jokers.cards[#G.jokers.cards]
+		if other_joker == card then other_joker = G.play.cards[#G.play.cards] end
+		if potatochips == 0 then return end
+		other_joker.ability.perma_bonus = potatochips
+		other_joker.ability.perma_repetitions = math.floor(potatochips / 5)
+	end
+end
+}
+
+if next(SMODS.find_mod("JoyousSpring")) then
+	rat_ref.config.extra = {}
+	rat_ref.config.extra.JoyousSpring = JoyousSpring.init_joy_table {
+		attribute = "EARTH",
+		monster_type = "BEAST",
+		summon_type = "NORMAL",
+		monster_archetypes = { ["Danger"] = true }
+	}
+	rat_ref.joy_desc_cards = {
+		{ properties = { { monster_archetypes = { "Danger" } } }, name = "k_joy_archetype" }, --this specific line was snatched from line 49 in JoyousSpring's 21danger.lua.
+}
+end
+SMODS.Joker(rat_ref)

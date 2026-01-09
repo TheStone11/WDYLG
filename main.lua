@@ -22,6 +22,12 @@ px = 71,
 py = 95,
 path = 'whyconsumables.png'
 }
+SMODS.Atlas{
+key = 'downsized',
+px = 71,
+py = 95,
+path = 'downsized.png'
+}
 SMODS.Sound{
     key = 'wega',
     path = 'thanksmyinstants.ogg'
@@ -46,7 +52,7 @@ SMODS.Sound{
 
 --file loading
 
-local j = {"code/contentjokers", "code/styling", "code/ifstatementpurgatorio", "code/contentblinds", "code/contentfunc", "code/contentAAAA"}
+local j = {"code/contentjokers", "code/styling", "code/ifstatementpurgatorio", "code/contentblinds", "code/contentfunc", "code/contentAAAA", "code/contentresets"}
 
 for i,v in pairs(j) do
 assert(SMODS.load_file(v..".lua"))()
@@ -63,9 +69,12 @@ cardareas = {
     }
 }
 
+love.window.setTitle("Balatro: ".. WDYLG.static.pregametitles[math.random(1, #WDYLG.static.pregametitles)])
+
 SMODS.current_mod.reset_game_globals = function (run_start)
+ if love.window.getTitle( ) ~= "Balatro" then love.window.setTitle("Balatro") end
 if run_start then G.GAME.WDYLG = {} 
-G.GAME.WDYLG.hiddenhands = {}
+G.GAME.WDYLG.hiddenhands = {"cry_None"}
  for i, v in pairs(G.GAME.hands) do if v.visible == false and not WDYLG.find(G.GAME.WDYLG.hiddenhands, i) == false then table.insert(G.GAME.WDYLG.hiddenhands, i) end end
 G.GAME.WDYLG.chaosemeraldgone = false
 end
