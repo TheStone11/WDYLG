@@ -14,7 +14,8 @@ WDYLG.static.embeddable = {
     'j_burnt',
     'j_chicot',
     'j_wdylg_oldman',
-    'j_wdylg_NOTTHEONEFROMFORSAKEN'
+    'j_wdylg_NOTTHEONEFROMFORSAKEN',
+    'j_entr_tesseract'
 }
 
 WDYLG.static.pregametitles = {
@@ -29,5 +30,13 @@ WDYLG.static.pregametitles = {
     ".--- --- -.- . .-.",
     "0110101001101111011010110110010101110010",
     "10 15 11 05 19",
-    "I ran out of ideas."
+    "I ran out of ideas.",
+    "Working on identifiying all astros.",
+    "Seraph owes me $5.",
+    "Gangster Edition",
+    "valfunc has been deprecated",
+    "Jimbo's Mod",
+    "FLEENTSTONES???",
+    "He was caught powerscaling jokers",
+    "Not your average children's card game."
 }

@@ -1,7 +1,7 @@
 CardSleeves = CardSleeves or {}
 
 
-SMODS.Joker{
+local gangstereditionref = {
     key = 'jimboGE',
 	loc_txt = {
 	name = "{C:wdylg_Gangster}Joker{}",
@@ -9,9 +9,7 @@ SMODS.Joker{
 	"{C:attention}THIS IS NOT A MOVIE JOKER.{}"}
 	},
 	rarity = 3,
-	depends = {"kino"},
-	generate_ui = Kino and Kino.generate_info_ui or nil,
-	pools, k_genre = {"Action", "Crime"},
+	k_genre = {"Action", "Crime"},
 	config = {extra = {bullet_count = 4, action = true}},
 	cost = 9,
 	atlas = 'wdylx',
@@ -21,7 +19,6 @@ SMODS.Joker{
 	unlocked = true,
 	discovered = false,
 	loc_vars = function(self, info_queue, card)
-     if G.P_CENTERS["j_kino_scarface_2"] ~= nil then self.kino_joker = G.P_CENTERS["j_kino_scarface_2"].kino_joker end
 	return { vars = {self.config.extra.bullet_count or 4} }
 	end,
     in_pool = function(self, args)
@@ -40,14 +37,15 @@ SMODS.Joker{
 	end
 }
 
+if next(SMODS.find_mod("kino")) then
+gangstereditionref.kino_joker = G.P_CENTERS["j_kino_scarface_2"].kino_joker
+gangstereditionref.generate_ui = Kino.generate_info_ui
+
+end
+SMODS.Joker(gangstereditionref)
 
 SMODS.Joker{
 key = 'phrime',
-loc_txt = {
-name = 'Minos Phrime',
-text = {'#1#/29 chance to...',
-        'you should get it by now.'}
-},
 config = {extra = {canevolve = false}},
 rarity = 3,
 cost = 64,
@@ -61,7 +59,7 @@ pos = {x = 1, y = 0},
 soul_pos = {x = 1, y = 1},
 
 loc_vars = function(self, info_queue, card)
-return { vars = {''..(G.GAME and G.GAME.probabilities.normal or 1)}}
+return { vars = {''..(G.GAME and G.GAME.probabilities.normal or 1)},key = next(SMODS.find_mod("busterb")) ~= nil and "j_wdylg_phrime_crossmod" or nil}
 end,
 
 set_card_type_badge = function(self, card, badges)

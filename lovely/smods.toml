@@ -2,16 +2,7 @@
 version = "1.0.0"
 priority = 0
 
-[[patches]]
-[patches.pattern]
-target = '=[SMODS kino "Items/Enhancements/action.lua"]'
-pattern = "if _joker.config.center.kino_joker then"
-position = 'at'
-payload = '''
-if _joker.config.center.kino_joker or _joker.ability.extra.action then
-'''
-match_indent = true
-times = 1
+
 
 [[patches]]
 [patches.pattern]

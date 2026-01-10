@@ -56,7 +56,7 @@ SMODS.Joker{
 	unlocked = true,
 	discovered = false,
 calculate = function (self, card, context)
-if context.end_of_round and (not context.game_over) and #G.consumeables.cards < G.consumeables.config.card_limit then
+if context.end_of_round and (not context.game_over) and #G.consumeables.cards < G.consumeables.config.card_limit and context.main_eval then
 G.GAME.consumeable_buffer = G.GAME.consumeable_buffer + 1
 SMODS.add_card{key = "c_judgement"}
 G.GAME.consumeable_buffer = 0
@@ -64,10 +64,12 @@ juice_card(card)
 return {message = "W CARDS?", card = card}
 end
 
+--[[
 if context.using_consumeable and context.card_added and context.cardarea == G.jokers and context.consumable.key == "Judgement" then
 juice_card(card)
 if context.card.rarity < 3 then return {message = "L cards...", card = card} else return {message = "W CARDS!", card = card} end
 end
+]]
 end
 
 
@@ -144,10 +146,11 @@ rarity = 3,
 pos = {x = 6, y = 0},
 
 check_for_unlock = function (self, args)
-	
+	if args.type == "wdylg_also_unlock" then
 	if G.P_CENTERS["j_perkeo"].unlocked then
 		unlock_card(self)
 	end
+end
 end,
 
 calculate = function (self, card, context)
@@ -204,7 +207,7 @@ if pseudorandom("wega", G.GAME.probabilities.normal, card.ability.extra.probabil
 	card.ability.extra.uhh = card.ability.extra.uhh + 1
     card.ability.extra.probability = card.ability.extra.probability - 2
 
-	card.ability.extra.jumpmult = card.ability.extra.jumpmult + (1 + WDYLG.valfunc("^", 2, card.ability.extra.uhh))
+	card.ability.extra.jumpmult = card.ability.extra.jumpmult + (1 + (2 ^ card.ability.extra.uhh))
 else
 	WDYLG.ability.WAAAAAARGH(card)
 	return {mult = card.config.extra.jumpmult, sound = 'wdylg_wega'}
@@ -380,11 +383,11 @@ SMODS.Joker{
 	if math.min(context.hands_due, 0.5) ~= 0.5 and card.ability.extra.bonushands > 0 then
      if card.ability.extra.bonushands + context.hands_due > 0 and math.min(context.hands_due, -1) ~= -1 then
 		card.ability.extra.bonushands = card.ability.extra.bonushands + context.hands_due
-		return {modify = context.hands_due * -1}
+		return {modify = 0}
 	 end
     if context.hands_due == -1 then
 		card.ability.extra.bonushands = card.ability.extra.bonushands - 1
-		return {modify = context.hands_due * -1}
+		return {modify = 0}
 	end
 	end
    end
@@ -444,8 +447,9 @@ SMODS.Joker{
 				end
 			end
 							if next(SMODS.find_card('j_wee', true)) ~= nil then
-				draw_card(G.hand, G.discard, nil, nil, next(SMODS.find_card('j_wee', true)))
-				next(SMODS.find_card('j_wee', true)):set_debuff(true)
+								local vic = SMODS.find_card('j_wee', true)
+				draw_card(G.hand, G.discard, nil, nil, vic)
+				vic:set_debuff(true)
 				playsound = true
 				end
 				if playsound == true then return {sound = 'WDYLG_tewcone'} end
@@ -706,3 +710,55 @@ if next(SMODS.find_mod("JoyousSpring")) then
 }
 end
 SMODS.Joker(rat_ref)
+
+SMODS.Joker{
+	key = "trangle",
+	loc_txt = {
+    name = "Triangle.",
+	text = {"IS THAT THE EVIL TRIANGLE",
+            'THAT STARS IN THE LEVEL "BARRACUDA"',
+		     "FROM HIT GAME JUST SHAPES AND BEATS?!"},
+},
+config = {extra = {tempreturns = 0, tempplayed = 0}},
+rarity = 4,
+cost = 30,
+atlas = "wdylj",
+pos = {x = 0, y = 6},
+perishable_compat = true,
+blueprint_compat = false,
+
+
+calculate = function(self, card, context)
+  if context.modify_scoring_hand then
+	card.ability.extra.tempplayed = #G.play
+	for i = 1, #context.full_hand do
+		if not WDYLG.find(context.scoring_hand, context.full_hand[i]) then
+			card.ability.extra.tempreturns = card.ability.extra.tempreturns + context.full_hand[i]:get_chip_bonus()
+		end
+	end
+	return {
+		add_to_hand = true
+	}
+  end
+if context.joker_main then
+if card.ability.extra.tempreturns == 0 then return end
+  local endresult = (math.sqrt(3))/4*card.ability.extra.tempreturns^2
+  for i = 1, #G.hand do
+	G.hand[i].ability.perma_x_mult = G.hand[i].ability.perma_x_mult + endresult
+  end
+  card.ability.extra.tempreturns = 0
+  return {
+	extra = {message = "T R I A N G U L A T E D", colour = G.C.MULT},
+	card = card
+  }
+end
+if context.after then
+				if card.ability.extra.tempplayedy < G.hand.config.highlighted_limit then
+			for i = 1, G.hand.config.highlighted_limit - card.ability.extra.tempplayed do
+			local snake = SMODS.create_card{set = 'Playing Card', area = G.hand, skip_materialize = true, rank = '3', suit = 'Hearts', stickers = {"wdylg_TOKEN"}, edition = "e_negative"}
+            snake.ability.forced_selection = true
+			end
+		end
+end
+end
+}

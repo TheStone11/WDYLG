@@ -77,6 +77,7 @@ if run_start then G.GAME.WDYLG = {}
 G.GAME.WDYLG.hiddenhands = {"cry_None"}
  for i, v in pairs(G.GAME.hands) do if v.visible == false and not WDYLG.find(G.GAME.WDYLG.hiddenhands, i) == false then table.insert(G.GAME.WDYLG.hiddenhands, i) end end
 G.GAME.WDYLG.chaosemeraldgone = false
+check_for_unlock({type = 'wdylg_also_unlock'})
 end
 end
 
