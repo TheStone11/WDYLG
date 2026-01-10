@@ -12,17 +12,9 @@ position = 'at'
 payload = '''
     local _mod = function(mod)
         local hand_UI = G.HUD:get_UIE_by_ID('hand_UI_count')
-        if SMODS ~= nil then SMODS.calculate_context({post_play_anyeurism = true, hands_due = mod}, eval) end
-for i = 1, #G.jokers.cards do
-                 if not SMODS ~= nil then eval = G.jokers.cards[i]:calculate_joker({post_play_anyeurism = true, hands_due = mod}) end
-                if eval then
-                    if eval.nuhuh then
-                        mod = 0
-                        break
-                    end
-                end
-            end
-        if tonumber(mod) ~= 0 then mod = mod or 0 end
+        SMODS.calculate_context({post_play_anyeurism = true, hands_due = mod}, eval)
+        if eval.modify ~= nil then mod = eval.modify end
+         mod = mod or 0
 '''
 match_indent = true
 

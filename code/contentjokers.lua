@@ -146,10 +146,11 @@ rarity = 3,
 pos = {x = 6, y = 0},
 
 check_for_unlock = function (self, args)
-	
+	if args.type == "wdylg_also_unlock" then
 	if G.P_CENTERS["j_perkeo"].unlocked then
 		unlock_card(self)
 	end
+end
 end,
 
 calculate = function (self, card, context)
@@ -382,11 +383,11 @@ SMODS.Joker{
 	if math.min(context.hands_due, 0.5) ~= 0.5 and card.ability.extra.bonushands > 0 then
      if card.ability.extra.bonushands + context.hands_due > 0 and math.min(context.hands_due, -1) ~= -1 then
 		card.ability.extra.bonushands = card.ability.extra.bonushands + context.hands_due
-		return {modify = context.hands_due * -1}
+		return {modify = 0}
 	 end
     if context.hands_due == -1 then
 		card.ability.extra.bonushands = card.ability.extra.bonushands - 1
-		return {modify = context.hands_due * -1}
+		return {modify = 0}
 	end
 	end
    end
