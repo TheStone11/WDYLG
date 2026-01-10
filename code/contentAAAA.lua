@@ -65,6 +65,7 @@ SMODS.Consumable {
     soul_set = "Planet",
     soul_rate = 0.055,
     can_repeat_soul = true,
+    select_card = 'consumeables',
         set_badges = function (self, card, badges)
    badges[#badges+1] = create_badge('-XXI', G.C.SUITS.Hearts, G.C.UI.TEXT_INACTIVE, 1)
   end,
@@ -95,10 +96,17 @@ SMODS.Consumable {
 	pos = {x = 6, y = 0},
     cost = 100,
     config = {extra = {poker_hand = 'High Card'}},
+    select_card = function (card, pack)
+    if G.GAME.hands[card.ability.extra.poker_hand].visible == false then
+        return "consumeables"
+    end
+end,
         set_badges = function (self, card, badges)
    badges[#badges+1] = create_badge('-XXI?', G.C.SUITS.Hearts, G.C.UI.TEXT_INACTIVE, 1)
   end,
-  
+  can_use = function ()
+    return true
+  end,
   set_ability = function(self, card, initial, delay_sprites)
     if not initial then return end
     card.config.extra.poker_hand = G.handlist[pseudorandom("WDYLG_keptyouwaiting", 1, #G.handlist)]
@@ -117,20 +125,20 @@ SMODS.Consumable {
   use = function (self, card, area, copier)
     local finallevel = 0
     local todestroy = {}
-    for i = 1, G.handlist do
-        if G.GAME.hands[G.handlist[i]].level > 0 and G.handlist[i] ~= card.config.extra.poker_hand then
+    for i = 1, #G.handlist do
+        if to_big(G.GAME.hands[G.handlist[i]].level) > to_big(0) and tostring(G.handlist[i]) ~= card.config.extra.poker_hand then
             finallevel = finallevel + G.GAME.hands[G.handlist[i]].level
              SMODS.smart_level_up_hand(card, G.handlist[i], true, G.GAME.hands[G.handlist[i]].level * -1)
         end
     end
-    for i = 1, G.playing_cards do
-        if next(SMODS.get_enhancements(G.playing_cards[i])) == nil then
-            table.insert{todestroy, G.playing_cards[i]}
+    for i = 1, #G.playing_cards do
+        if next(SMODS.get_enhancements(G.playing_cards[i])) ~= nil then
+            table.insert(todestroy, G.playing_cards[i])
             finallevel = finallevel + G.playing_cards[i].base.nominal
         end
     end
-    for i = 1, G.jokers.cards do
-        table.insert{todestroy, G.jokers.cards[i]}
+    for i = 1, #G.jokers.cards do
+        table.insert(todestroy, G.jokers.cards[i])
         finallevel = finallevel + G.jokers.cards[i].sell_cost
     end
     SMODS.destroy_cards(todestroy, false, true)

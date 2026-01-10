@@ -4,16 +4,6 @@ priority = 0
 
 [[patches]]
 [patches.pattern]
-target = "blind.lua"
-pattern = "ease_dollars(-1)"
-position = "at"
-payload = '''
-ease_dollars(G.play.cards[i].base.nominal + 1 * -1 )
-'''
-match_indent = false
-
-[[patches]]
-[patches.pattern]
 target = "functions/common_events.lua"
 pattern = '''local _mod = function(mod)
         local hand_UI = G.HUD:get_UIE_by_ID('hand_UI_count')

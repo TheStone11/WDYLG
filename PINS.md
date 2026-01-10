@@ -30,6 +30,21 @@ whichever comes first.
 
 Counts as part of the Danger archetype if joyous spring is enabled.
 
+## Minos Phrime.
+
+originally just a crossmod joker.. i turned this thing into its very own joker a while back.
+i do not remember what its supposed to do outside of giving you juggle tags.
+
+However, playing this mod that you could throw a dying neutron star at with busted buffoons gives it a chance to evolve into THAT mod's minos prime.
+
+~~that sisphyus cat thing is probably next.~~
+
+## The EVIL triangle from just shapes and beats.
+
+What it says is what you get.
+This joker applies splash on unscored cards and proceeds to throw them into a equilateral triangle formula, then proceeds to buff every in-hand card's bonus xmult by that formula's result.
+Trying to play cards under your selection limit adds snakes (3 of hearts) to your hand which are force selected.
+
 # Consumables
 
 ## NighMortem Neutron Star.
