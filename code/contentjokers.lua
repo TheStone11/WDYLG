@@ -28,8 +28,9 @@ loc_vars = function(self,info_queue,card)
   local scmult = card.ability.extra.scoremult
   local current_hand_mult = mult
 	if math.min(cfp, current_hand_mult) ~= cfp and math.min(cfp, G.GAME.chips) ~= cfp then
-    if round_number(current_hand_mult * scmult, 1) > cfp then
-	local lsh = G.GAME.chips - (G.GAME.chips * round_number(current_hand_mult * scmult, 1))
+    if round_number(current_hand_mult * scmult, 0) > cfp then
+	local lsh = (G.GAME.chips * round_number(current_hand_mult * scmult, 0)) - G.GAME.chips
+	G.GAME.chips = G.GAME.chips + lsh
 	ease_chips(lsh)
 	WDYLG.usequote = true
 	 end
@@ -58,7 +59,7 @@ SMODS.Joker{
 calculate = function (self, card, context)
 if context.end_of_round and (not context.game_over) and #G.consumeables.cards < G.consumeables.config.card_limit and context.main_eval then
 G.GAME.consumeable_buffer = G.GAME.consumeable_buffer + 1
-SMODS.add_card{key = "c_judgement"}
+SMODS.add_card{key = "c_judgement", area = G.consumeables}
 G.GAME.consumeable_buffer = 0
 juice_card(card)
 return {message = "W CARDS?", card = card}
@@ -143,6 +144,7 @@ blueprint_compat = false,
 eternal_compat = true,
 perishable_compat = false,
 rarity = 3,
+atlas = 'wdylj',
 pos = {x = 6, y = 0},
 
 check_for_unlock = function (self, args)
@@ -163,16 +165,18 @@ if context.setting_blind then
 		contexttext = contexttext + 1
 	end
  end
- if contexttext > 0 then return {message = "*Borrowed "..contexttext.."cards*"} end
+ if contexttext > 0 then return {message = "*Borrowed "..contexttext.."*"} end
  contexttext = 0
  end
 
 if context.blind_defeated then
     for i, v in ipairs(card.ability.extra.borrowed) do
-		SMODS.create_card{key = v, edition = 'e_negative'}
+		local turtledelivery = SMODS.create_card{key = v, edition = 'e_negative'}
+		turtledelivery:add_to_deck()
+		G.consumeables:emplace(turtledelivery)
 		contexttext = contexttext + 1
 	end
-	if contexttext > 0 then return {message = "*Returned "..contexttext.."cards*"} end
+	if contexttext > 0 then return {message = "*Returned "..contexttext.."*"} end
  contexttext = 0
 	card.ability.extra.borrowed = {}
  end
@@ -185,7 +189,7 @@ key = 'wega',
 loc_txt = {
 name =  "Wega Idol",
 text = {"You shouldn't have this.",
-        "#1# in #2# chance for #3# mult, {C:attention}ALTHOUGH{}..."}
+        "#1# in #2# chance for {X:mult,C:white}#3# Mult, {C:attention}ALTHOUGH{}..."}
 },
 config = {extra = {probability = 20, jumpmult = 1, uhh = 0}},
 unlocked = true,
@@ -210,7 +214,10 @@ if pseudorandom("wega", G.GAME.probabilities.normal, card.ability.extra.probabil
 	card.ability.extra.jumpmult = card.ability.extra.jumpmult + (1 + (2 ^ card.ability.extra.uhh))
 else
 	WDYLG.ability.WAAAAAARGH(card)
-	return {mult = card.config.extra.jumpmult, sound = 'wdylg_wega'}
+	local temp = card.ability.extra.jumpmult
+	card.ability.extra.jumpmult = 1
+	card.ability.extra.probability = 20
+	return {mult = card.ability.extra.jumpmult, sound = 'wdylg_wega'}
 end
 end
 end
@@ -276,10 +283,11 @@ SMODS.Joker{
 			l1 = l1 + G.play.cards[i].base.nominal
 		end
         for i = 0, l3 do
-			LETSGO = LETSGO + tonumber(WDYLG.valfunc("^", l1, l2))
+			LETSGO = LETSGO + (l1 ^ l2)
 			if l2 ~= 1 then l2 = l2 - 1 end
 		end
-		return {mult = (G.GAME.chips * LETSGO) - G.GAME.chips}
+		SMODS.calculate_context({wdylg_merge = true})
+		return {xchips = LETSGO}
 	 end
 	 if context.post_joker then
 		play_area_status_text("Dog absorbed the artifact.", true)
@@ -340,10 +348,10 @@ SMODS.Joker{
 	pos = {x = 6, y = 0},
 	pixel_size = {w = 71, h = 65},
 	display_size = {w = 71, h = 63},
-	no_collection = true,
 	unlocked = true,
 	discovered = false,
     blueprint_compat = false,
+	no_collection = true,
     price = 0,
 in_pool = function (self, args)
       return false
@@ -352,7 +360,14 @@ in_pool = function (self, args)
      if context.joker_main then
 		return {chips = 1, sound = "timpani"}
 	 end
-	end
+	end,
+
+	add_to_deck = function(self, card, from_debuff)
+		if from_debuff then return end
+		card.click = function ()
+			SMODS.destroy_cards(card, true, true)
+		end
+	end,
 }
 
 
@@ -381,14 +396,12 @@ SMODS.Joker{
   calculate = function (self, card, context)
    if context.post_play_anyeurism then
 	if math.min(context.hands_due, 0.5) ~= 0.5 and card.ability.extra.bonushands > 0 then
-     if card.ability.extra.bonushands + context.hands_due > 0 and math.min(context.hands_due, -1) ~= -1 then
+     if card.ability.extra.bonushands + context.hands_due > 0 then
 		card.ability.extra.bonushands = card.ability.extra.bonushands + context.hands_due
 		return {modify = 0}
+	 else
+		return {message = localize('k_nope_ex') , card = card}
 	 end
-    if context.hands_due == -1 then
-		card.ability.extra.bonushands = card.ability.extra.bonushands - 1
-		return {modify = 0}
-	end
 	end
    end
    if context.end_of_round then
@@ -399,80 +412,23 @@ SMODS.Joker{
 	end
 	if card.ability.extra.bonushands < self.config.extra.base then
 		card.ability.extra.bonushands = self.config.extra.base
+		return  {
+					card = card,
+					message = localize('k_reset')
+		}
 	end
    end
   end
 }
 
-SMODS.Joker{
-	key = 'dunnohaventplayedcrkbefore',
 
-	loc_txt = {
-		name = "Black Sapphire",
-		text = {"UHMM i have no clue.",
-	            "{C:attention}currently targeting #1#{}"}
-	},
-	config = {extra = {target = nil}},
-	unlocked = true,
-     discovered = false,
-     blueprint_compat = false,
-     eternal_compat = true,
-     perishable_compat = true,
-    rarity = 4,
-	cost = 50,
-    pos = {x = 6, y = 0},
-    wdylg_imitates = {"j_yahimod_yahicard"},
-
-	loc_vars = function(self,info_queue,card)
-    return {vars = {card.ability.extra.target ~= nil and card.ability.extra.target.name or "No One"}}
-	end,
-	calculate = function (self, card, context)
-       if context.setting_blind then
-		card.ability.extra.target = G.jokers.cards[pseudorandom("WDYLG_yahiamouse", 1, #G.jokers)]
-		end
-		if context.before and context.cardarea == G.hand then
-			local playsound = false
-			for i = 1, #G.hand.cards do
-				if G.hand.cards[i].base.nominal == 2 then
-               local playsound = true
-		G.E_Manager:add_event(Event({
-        trigger ='immediate',
-		blocking = false,
-		blockable = false,
-		func = function ()
-			draw_card(G.hand, G.discard, nil, nil, G.hand.cards[i])
-		return true
-		end
-	}))
-				end
-			end
-							if next(SMODS.find_card('j_wee', true)) ~= nil then
-								local vic = SMODS.find_card('j_wee', true)
-				draw_card(G.hand, G.discard, nil, nil, vic)
-				vic:set_debuff(true)
-				playsound = true
-				end
-				if playsound == true then return {sound = 'WDYLG_tewcone'} end
-		end
-		if context.post_trigger then
-			if card.ability.extra.target ~= context.other_card then return end
-			local other_ret = context.other_ret.jokers or {}
-			for i = 1, other_ret do
-				if type(other_ret[i]) == "number" then
-					other_ret[i] = other_ret[i] * 0.74
-				end
-			end
-			card:juice_Up()
-		end
-	   end
-}
 
 SMODS.Joker{
   key = '2000',
 
   loc_txt = {
 		name = "2000",
-		text = {"Instantly scam a joker in your team for 2000 chips..."}
+		text = {"Instantly scam a joker in your team for {X:chips,C:white}2000 Chips{}..."}
 	},
 		unlocked = true,
      discovered = false,
@@ -493,47 +449,6 @@ end
 }
 
 SMODS.Joker{
-	key = 'marketable',
-
-	loc_txt = {
-		name = "Plushie",
-		text = {"{C:inactive,S:0.9}Aww so cu- wait how did you get this?{}",
-	            "This plushie of #1# will be sure to keep you companion till the end...",
-                "{C:inactive,S:0.75,E:2}Or at least till you sell it for double usual earnings.{}"}
-	},
-	config = { extra = {ID = nil, origin = nil} },
-		atlas = 'wdylhlf',
-	pos = {x = 6, y = 0},
-	pixel_size = {w = 71, h = 65},
-	display_size = {w = 71, h = 63},
-	rarity = 1,
-	in_pool = function (self, args)
-      return false
-	end,
-    cost = 0,
-	loc_vars = function(self,info_queue,card)
-	if card.ability.extra.origin == nil then return{vars = {"Nothing."}} end 
-
-	if card.ability.extra.origin == "BLIND" then
-        return{vars = {G.P_BLINDS[card.ability.extra.ID].name}}
-	elseif card.ability.extra.origin == "JOKER" then
-		return{vars = {G.P_CENTERS[card.ability.extra.ID].name}}
-	end
-	end,
-	calculate = function (self, card, context)
-		if context.card == card then return {sound = "wdylg_squeak"} end
-
-		if card.ability.extra.ID == nil and card.ability.extra.origin == nil then return end
-      if card.ability.extra.origin == "BLIND" then
-		card.cost = G.P_BLINDS[card.ability.extra.ID].dollars * 2
-	  elseif card.ability.extra.origin == "JOKER" then
-        card.cost = G.P_CENTERS[card.ability.extra.ID].cost * 2
-	  end
-	end
-}
-
-
-SMODS.Joker{
 	key = "VOID",
 	loc_txt = {
 		name = "The Ceaseless Void",
@@ -547,7 +462,8 @@ SMODS.Joker{
 			RELEASE = false,
 			ex = 12,
 			somethingelse = 0,
-			tempscalelordhelpme = 0
+			tempscalelordhelpme = 0,
+			refreturn = function() end
 		}
 	},
 		atlas = 'wdylhlf',
@@ -590,15 +506,16 @@ SMODS.Joker{
 				G.pack_cards[jorm[pseudorandom("WDYLG_CEASELESS", 1, #jorm)]]:set_edition("e_negative")
 			end
 		end
-	else
-		return {message = "Nothing."}
 	end
-	if G.STATE == G.STATES.SELECTING_HAND then
+	end
+	if card.ability.extra.WAIT2 == 0 then
+		if G.STATE == G.STATES.SELECTING_HAND then
 		card.ability.extra.RELEASE = true
 		card:juice_up(0.3, 0)
 		card.ability.extra.WAIT2 = 4
-	end
+		end
   end
+  return {message = "Nothing."}
 end
 if context.final_scoring_step then
 	for i = 1, G.play.cards do
@@ -614,7 +531,7 @@ if context.final_scoring_step then
 	end
 end
 
-if context.before and context.repetition == false and card.ability.extra.RELEASE == true then
+if context.joker_main and context.repetition == false and card.ability.extra.RELEASE == true then
 	card.ability.extra.RELEASE = false
 	local chups_ref = card.ability.extra.somethingelse
 	card.ability.extra.somethingelse = 0
@@ -624,10 +541,21 @@ if context.blind_defeated then card.ability.extra.WAIT = math.max(card.ability.e
 if context.after then card.ability.extra.WAIT2 = math.max(card.ability.extra.WAIT2 -1, 0) end
 end,
 
+add_to_deck = function(self, card, from_debuff)
+		if from_debuff then return end
+		card.ability.extra.refreturn = card.click
+		card.click = function ()
+			if card.ability.extra.WAIT2 == 0 or card.ability.extra.WAIT == 0 then
+				card:calculate_joker({USEABILITY = true})
+			end
+			card.ability.extra.refreturn(card)
+		end
+	end,
 remove_from_deck = function(self, card, from_debuff)
 	if from_debuff then return end
    	local jerp = {}
-	for i = 1, math.floor(#G.deck.cards * 0.50) do
+	local jerp2 = {}
+	for i = 1, math.floor(#G.playing_cards * 0.50) do
 		local cardref = 0
 		while true do
 		cardref = pseudorandom("WDYLG_CEASELESS", 1, #G.playing_cards)
@@ -637,9 +565,10 @@ remove_from_deck = function(self, card, from_debuff)
   table.insert(jerp, cardref)
 end
 for i = 1, #jerp do
-	table.insert(jerp, jerp[i], G.playing_cards[i])
+	table.insert(jerp2, G.playing_cards[jerp[i]])
 end
-SMODS.destroy_cards(jerp)
+SMODS.destroy_cards(jerp2)
+G.FUNCS.draw_from_deck_to_hand()
 end
 }
 
@@ -723,28 +652,31 @@ config = {extra = {tempreturns = 0, tempplayed = 0}},
 rarity = 4,
 cost = 30,
 atlas = "wdylj",
-pos = {x = 0, y = 6},
+pos = {x = 6, y = 0},
 perishable_compat = true,
 blueprint_compat = false,
 
 
 calculate = function(self, card, context)
-  if context.modify_scoring_hand then
-	card.ability.extra.tempplayed = #G.play
+	if context.before then
+			card.ability.extra.tempplayed = #context.full_hand
 	for i = 1, #context.full_hand do
-		if not WDYLG.find(context.scoring_hand, context.full_hand[i]) then
-			card.ability.extra.tempreturns = card.ability.extra.tempreturns + context.full_hand[i]:get_chip_bonus()
+		if not WDYLG.find(context.scoring_hand, context.full_hand[i]) and context.full_hand[i].ability.wdylg_TOKEN ~= true then
+			card.ability.extra.tempreturns = card.ability.extra.tempreturns + (context.full_hand[i].base.nominal + context.full_hand[i].ability.bonus + (context.full_hand[i].ability.perma_bonus or 0))
 		end
 	end
+	print("now serving ".. card.ability.extra.tempplayed.. " and ".. card.ability.extra.tempreturns) 
+	end
+  if context.modify_scoring_hand then
 	return {
 		add_to_hand = true
 	}
   end
 if context.joker_main then
 if card.ability.extra.tempreturns == 0 then return end
-  local endresult = (math.sqrt(3))/4*card.ability.extra.tempreturns^2
-  for i = 1, #G.hand do
-	G.hand[i].ability.perma_x_mult = G.hand[i].ability.perma_x_mult + endresult
+  local endresult = round_number(((math.sqrt(3))/4*round_number(card.ability.extra.tempreturns, 0)^2) / 100, 1)
+  for i = 1, #G.hand.cards do
+	G.hand.cards[i].ability.perma_x_mult = G.hand.cards[i].ability.perma_x_mult + endresult
   end
   card.ability.extra.tempreturns = 0
   return {
@@ -753,12 +685,143 @@ if card.ability.extra.tempreturns == 0 then return end
   }
 end
 if context.after then
-				if card.ability.extra.tempplayedy < G.hand.config.highlighted_limit then
+				if card.ability.extra.tempplayed < G.hand.config.highlighted_limit then
 			for i = 1, G.hand.config.highlighted_limit - card.ability.extra.tempplayed do
-			local snake = SMODS.create_card{set = 'Playing Card', area = G.hand, skip_materialize = true, rank = '3', suit = 'Hearts', stickers = {"wdylg_TOKEN"}, edition = "e_negative"}
+			local snake = SMODS.create_card{set = 'Playing Card', skip_materialize = true, rank = '3', suit = 'Hearts', edition = "e_negative"}
+			snake:add_sticker("wdylg_TOKEN", true)
+			snake:add_to_deck()
+			G.hand:emplace(snake)
             snake.ability.forced_selection = true
+			G.hand:add_to_highlighted(snake, true)
 			end
+			card.ability.extra.tempplayed = 0
 		end
 end
 end
 }
+
+SMODS.Joker{
+	key = 'grave',
+	loc_txt = {
+      name = "Volatile Grave",
+	  text = {"Trying to play a hand already in most played",
+			 "Has 1:I odds of killing you Instantly, where",
+			 "I is the number of most played hands.",
+			 "Otherwise, {X:mult,C:White}x#2#{} Mult added to your pre-existing {X:mult,C:White}x#1#{}"}
+	},
+	pos = {x=9,y=12},
+	rarity = 3,
+	config = {Xmult = 1, extra = 0.25},
+	discovered =false,
+
+	in_pool = function (self, args)
+      return false
+	end,
+    cost = 0,
+    blueprint_compat = false,
+
+    loc_vars = function(self, info_queue, center)
+      return {vars = {center.ability.Xmult, center.ability.extra}}
+	end,
+
+	calculate = function (self, card, context)
+       if context.before then
+		local callpity = true
+		local reset = false
+		local play_more_than = (G.GAME.hands[context.scoring_name].played or 0)
+		for c, v in pairs(G.GAME.hands) do
+			if c ~= context.scoring_name and v.played >= play_more_than and v.visible then
+				callpity = false
+				break
+			end
+		end
+		if callpity then
+			local ofthedraw = {}
+			play_more_than = play_more_than - 1
+			reset = true
+			for c, v in pairs (G.GAME.hands) do
+				if v.played == play_more_than then table.insert(ofthedraw, c) end
+			end
+			pseudoshuffle(ofthedraw, "WDYLG_obelpity")
+			if not context.scoring_name == ofthedraw[1] then
+				reset = false
+			end
+			if reset == true then
+			G.STATE = G.STATES.GAME_OVER; G.STATE_COMPLETE = false
+		end
+		end
+		SMODS.scale_card(card, {ref_table = card.ability, ref_value = "Xmult", scalar_value = "extra"})
+	end
+end
+}
+
+SMODS.Joker{
+	key = "ORANGEFM",
+	loc_txt = {
+		name = "Orange Frontman.",
+		text = {"Increases played diamonds' base chips by {X:chips, C:white}#1#%{}",
+	            "PURPOSELY ignores enhancements."},
+		unlock = {"Jimbo, how tf do i",
+		          "craft orange Frontman in balatro?"}
+	},
+	in_pool = function (self, args)
+      return self.unlocked
+	end,
+	loc_vars = function (self, args, card)
+		return {vars = {(card.ability.extra - 1 * 10) * -1}}
+	end,
+    cost = 40,
+	rarity = 4,
+	discovered = false,
+	unlocked = false,
+	atlas = 'wdylj',
+	pos = {x = 6, y = 0},
+    config = {extra = 1.15},
+	calculate = function(self, card, context)
+		if context.initial_scoring_step then
+			local returnnow = false
+			for i = 1, #context.full_hand do
+				if context.full_hand[i].base.suit_nominal == 0.01 then
+				context.full_hand[i].ability.bonus = context.full_hand[i].ability.bonus + round_number((context.full_hand[i].base.nominal ^ card.ability.extra), 1)
+				context.full_hand[i]:juice_up()
+				returnnow = true
+				end
+			end
+			if returnnow then return {message = "^".. card.ability.extra.. " Chips"} end
+		end
+		if context.joker_main then
+			if card.ability.extra ~= self.config.extra then
+				card.ability.extra = self.config.extra
+				return {
+					message = localize('k_reset')
+				}
+			end
+		end
+	end
+}
+
+SMODS.Joker{
+	key = "diamond",
+	loc_txt = {
+		name = "Avaricial Diamond",
+		text = {"Each diamond scored gives its nominal as money."}
+	},
+	in_pool = function (self, args)
+      return false
+	end,
+	cost = 40,
+	rarity = 4,
+	discovered = false,
+	unlocked = false,
+	atlas = 'wdylj',
+	pos = {x = 6, y = 0},
+
+	calculate = function(self, card, context)
+       if context.individual and context.cardarea == G.play then
+		if context.other_card:is_suit('Diamonds') then
+		return {dollars = context.other_card.base.nominal}
+		end
+	   end
+	end
+}
+

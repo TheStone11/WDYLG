@@ -6,7 +6,7 @@ key = 'rasa',
 -- all modded jokers are disabled, this becomes permanent if blind gets oneshot, if hand contains more than 3 modded material at time of play, forfiet the game.
 name = 'Undone',
 vars  = {},
-boss = {min = 7, max = 10},
+boss = {min = 7, max = 10, showdown = true},
 mult = 0.5,
 dollars = 10,
 effect = {whitelist = {"e_foil", "e_holo", "e_polychrome" }, cardstilldeath = 0},
@@ -55,6 +55,7 @@ text = {"Check Pins",
  },
  effect = {initialmult = 4, anchor = 0}, 
 mult = 4,
+boss = {min = 7, max = 10, showdown = true},
 boss_colour = HEX('84b7b6'),
 
 set_blind = function (self)
@@ -88,9 +89,9 @@ press_play = function (self)
          if SMODS and SMODS.has_enhancement(G.discard.cards[i], "m_glass") or G.discard.cards[i].config.center.key == "m_glass" then
          local j = G.discard.cards[i].base.nominal
          for e = 1, #G.deck.cards do
-         if (SMODS and SMODS.has_enhancement(G.deck.cards[e], "m_glass") or G.deck.cards[e].config.center.key == "m_glass") and G.deck.cards[e].base.nominal == j and pseudorandom('glass') < G.GAME.probabilities.normal/G.deck.cards[e].ability.extra then
-         table.insert(rubble, G.deck.cards[e])
-         G.deck.cards[e]:shatter()
+         if (SMODS and SMODS.has_enhancement(G.playing_cards[e], "m_glass") or G.playing_cards[e].config.center.key == "m_glass") and G.playing_cards[e].base.nominal == j and pseudorandom('glass') < G.GAME.probabilities.normal/G.playing_cards[e].ability.extra then
+         table.insert(rubble, G.playing_cards[e])
+         G.playing_cards [e]:shatter()
          end
          if pseudorandom('glass') < G.GAME.probabilities.normal/G.discard.cards[e].ability.extra then G.discard.cards[e]:shatter() end
          end
@@ -141,6 +142,9 @@ SMODS.Blind {
         text = {"Only hidden hands allowed,",
                 "Modded rarities are REROLLED."}
     },
+    boss = {min = 5},
+    mult = 3,
+    boss_colour = HEX("7F4CED"),
     effect = {whitelist = {}},
     set_blind = function(self)
         for i, _ in G.P_JOKER_RARITY_POOLS do
@@ -148,8 +152,8 @@ SMODS.Blind {
         end
         for i = 1, G.jokers.cards do
             if type(tonumber(G.P_CENTERS[G.jokers.cards[i].config.center_key].rarity)) ~= "number" or (next(SMODS.find_mod("busterb")) and G.jokers.cards[i].config.center_key == 'j_wdylg_phrime') then
-                local temp = G.P_JOKER_RARITY_POOLS[G.GAME.blind.effect.whitelist[pseudorandom("WDYLG_TOKJ", 0, #G.GAME.blind.effect.whitelist)]]
-                G.jokers.cards[i]:set_ability(temp[pseudorandom("WDYLG_TOKJ2", 0, #temp)])
+                local temp = G.P_JOKER_RARITY_POOLS[G.GAME.blind.effect.whitelist[pseudorandom("WDYLG_TOKJ", 1, #G.GAME.blind.effect.whitelist)]]
+                G.jokers.cards[i]:set_ability(temp[pseudorandom("WDYLG_TOKJ2", 1, #temp)])
             end
         end
     end,
@@ -167,5 +171,3 @@ SMODS.Blind {
         end
     end
 }
-
-
