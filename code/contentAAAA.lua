@@ -1,4 +1,4 @@
-
+to_big = to_big or function(x) return x end
 
 --paperback thanky ou
 SMODS.Consumable{
@@ -20,8 +20,7 @@ can_use = function (self, card)
 
  use = function (self, card, area, copier)
     local wevreakafterthis = G.jokers.highlighted[1]
-    wevreakafterthis.ability.extra.perma_x_chips = wevreakafterthis.ability.perma_x_chips or 0
-    wevreakafterthis.ability.extra.perma_x_chips = 13
+    wevreakafterthis.ability.perma_x_chips = wevreakafterthis.ability.perma_x_chips + 13
  end
 }
 
@@ -44,7 +43,7 @@ SMODS.Consumable {
         return #G.jokers.highlighted == card.ability.extra
  end,
  use = function (self, card, area, copier)
-    if math.min(1, math.random(1, 2)) ~= 1 then
+    if math.max(1, math.random(1, 2)) ~= 1 then
             local wevreakafterthis = G.jokers.highlighted[1]
             wevreakafterthis:set_ability("j_wdylg_sadnsorry")
             SMODS.destroy_cards(wevreakafterthis, true)
@@ -73,8 +72,8 @@ SMODS.Consumable {
      return G.GAME.hands["Full House"].level > 0
   end,
  use = function (self, card, area, copier)
-    ease_dollars(G.P_CENTER_POOLS.Planet["c_earth"].cost * G.GAME.hands["Full House"].level)
-    SMODS.smart_level_up_hand(card, 'Full House', true, G.GAME.hands["Full House"].level * -1)
+    ease_dollars(G.P_CENTERS["c_earth"].cost * G.GAME.hands["Full House"].level)
+    SMODS.smart_level_up_hand(card, 'Full House', true, tonumber("-".. G.GAME.hands["Full House"].level))
  end
 }
 
@@ -91,6 +90,7 @@ SMODS.Consumable {
     soul_set = "Planet",
     soul_rate = 0.010,
     can_repeat_soul = true,
+    no_collection = true,
 
         	atlas = 'wdylj',
 	pos = {x = 6, y = 0},
@@ -128,7 +128,7 @@ end,
     for i = 1, #G.handlist do
         if to_big(G.GAME.hands[G.handlist[i]].level) > to_big(0) and tostring(G.handlist[i]) ~= card.config.extra.poker_hand then
             finallevel = finallevel + G.GAME.hands[G.handlist[i]].level
-             SMODS.smart_level_up_hand(card, G.handlist[i], true, G.GAME.hands[G.handlist[i]].level * -1)
+             SMODS.smart_level_up_hand(card, G.handlist[i], true, tonumber("-".. G.GAME.hands[G.handlist[i]].level))
         end
     end
     for i = 1, #G.playing_cards do
@@ -159,10 +159,11 @@ SMODS.Consumable {
     cost = 6,
     select_card = 'consumeables',
 can_use = function (self, card)
-        return #G.jokers.highlighted == card.ability.extra and WDYLG.find(WDYLG.static.embeddable, G.jokers.highlighted[1].config.center_key)
+        return #G.jokers.highlighted == card.ability.extra
  end,
 
   use = function (self, card, area, copier)
+    if not WDYLG.find(WDYLG.static.embeddable, G.jokers.highlighted[1].config.center.key) then return end
     card:juice_up()
     draw_card(G.jokers.highlighted, G.vouchers)
     card:flip()
@@ -237,4 +238,17 @@ SMODS.Voucher{
  end
 end
 end
+}
+
+SMODS.Sticker{
+    key = 'TOKEN',
+    loc_txt = {name = "Token", text = {"will immediately vanish."}},
+    hide_badge = true,
+    default_compat = false,
+   rate = 0.0,
+    calculate = function (self, card, context)
+        if context.final_scoring_step then
+            card:shatter()
+        end
+    end
 }

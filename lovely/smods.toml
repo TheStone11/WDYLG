@@ -9,8 +9,7 @@ priority = 0
 target = '=[SMODS _ "src/utils.lua"]'
 pattern = "local results = {}"
 position = 'after'
-payload = '''
-local spinge = function(tabe, strin)
+payload = '''local spinge = function(tabe, strin)
     for _, v in ipairs(table) do
 	if v == strin then return true end
 	end
@@ -25,8 +24,15 @@ times = 1
 target = '=[SMODS _ "src/utils.lua"]'
 pattern = "if v and type(v) == 'table' and v.config.center.key == key and (count_debuffed or not v.debuff) then"
 position = 'at'
-payload = '''
-if v and type(v) == 'table' and (v.config.center.key == key or spinge(v.config.center.wdylg_imitates, key)) and (count_debuffed or not v.debuff) then
-'''
+payload = "if v and type(v) == 'table' and (v.config.center.key == key or spinge(v.config.center.wdylg_imitates, key)) and (count_debuffed or not v.debuff) then"
+match_indent = false
+times = 1
+
+[[patches]]
+[patches.pattern]
+target = '=[SMODS _ "src/overrides.lua"]'
+pattern = "SMODS.calculate_context({ blind_defeated = true })"
+position = 'at'
+payload = "SMODS.calculate_context({ blind_defeated = true, blind = G.GAME.round_resets.blind })"
 match_indent = false
 times = 1

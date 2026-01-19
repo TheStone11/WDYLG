@@ -62,17 +62,7 @@ payload = '''
 '''
 match_indent = false
 
-# alcatraz: now goes after other cat cards.. i think.
-
-[[patches]]
-[patches.pattern]
-target = '[SMODS yahimod "items/blinds"]'
-pattern ='if not G.GAME.blind.disabled and G.jokers.cards[i].config.center.pools and G.jokers.cards[i].config.center.pools.Cat then'
-position = 'at'
-payload = '''
-if not G.GAME.blind.disabled and G.jokers.cards[i].config.center.pools and (G.jokers.cards[i].config.center.pools.Cat or G.jokers.cards[i].config.center.pools.Kitties or G.jokers.cards[i].config.center.pools.kity or G.jokers.cards[i].config.center.key == unik_catto_boi) then
-'''
-match_indent = false
+# alcatraz was moved to main mod.
 
 #localization
 
@@ -93,6 +83,6 @@ target = "blind.lua"
 pattern = "ease_dollars(-1)"
 position = "at"
 payload = '''
-ease_dollars((G.play.cards[i].base.nominal + 1) * -1 )
+ease_dollars(tonumber("-".. G.play.cards[i].base.nominal + 1))
 '''
 match_indent = false

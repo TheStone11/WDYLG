@@ -42,27 +42,6 @@ for i = 1, G.jokers do
 end
 end
 
-SMODS.Keybind{
-    key_pressed = "G",
-    event = "held",
-    held_duration = 3,
-   action = function (self)
-    local yell = true
-   if (not G.GAME) or G.STATE == G.STATES.HAND_PLAYED then return end
-   if #G.jokers.highlighted == 0 then play_area_status_text("Select a joker to use its activated effect.", true) return end
-   stop_use()
-   for i = 1, #G.jokers.highlighted do if G.jokers.highlighted[i].WDYLG_hasability then 
-    yell = false
-
-end  
-end
-if yell == true then play_area_status_text("No highlighted jokers have an activatable effect.", true) return end
-for i = 1, G.jokers.highlighted do
-   G.jokers.highlighted[i]:calculate_joker({USEABILITY = true})
-end
-end
-
-}
 
 local i_dunno_how_to_sell = G.FUNCS.sell_card
 

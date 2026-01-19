@@ -18,7 +18,7 @@ return {
                 text = {
                   "Don't let it's appearance fool you,",
                   "This one makes ALL of the rules.",
-                  "{X:inactive,C:default,s:0.90}Now a honorary Danger?{}"
+                  "{X:inactive,C:default,s:0.60}Now a honorary Danger?{}"
                 }
             },
            j_wdylg_BRM = {
@@ -27,6 +27,16 @@ return {
                 "Don't let it's appearance fool you,",
                 "This one makes ALL of the rules."
                 }
+            },
+            j_wdylg_phrime_crossmod = {
+                name = "Minos Phrime",
+                text = {"I don't even remember how this works.",
+                    '{X:inactive,C:default,s:0.60}#1#/29 chance to...',
+        'you should get it by now.{}'}
+            },
+            j_wdylg_phrime  = {
+                name = "Minos Phrime",
+                text = {"I don't even remember how this works."},
             }
         }
     }
